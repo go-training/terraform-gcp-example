@@ -4,11 +4,25 @@
 
 ### 安裝 Terraform
 
-請參考 [Terraform 官方文件](https://learn.hashicorp.com/tutorials/terraform/install-cli) 安裝 Terraform。
+請參考 [Terraform 官方文件](https://learn.hashicorp.com/tutorials/terraform/install-cli) 安裝 Terraform。MacOS 可以使用 Homebrew 安裝：
+
+```bash
+brew install terraform
+```
 
 ### 安裝 Google Cloud SDK
 
-請參考 [Google Cloud SDK 官方文件](https://cloud.google.com/sdk/docs/install) 安裝 Google Cloud SDK。
+請參考 [Google Cloud SDK 官方文件](https://cloud.google.com/sdk/docs/install) 安裝 Google Cloud SDK。MacOS 可以使用 Homebrew 安裝：
+
+```bash
+brew install --cask google-cloud-sdk
+```
+
+安裝完成後，請使用以下指令登錄您的 Google Cloud 帳號：
+
+```bash
+gcloud auth application-default login
+```
 
 ## 在 GCP 上面建立 Service Account
 
