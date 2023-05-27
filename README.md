@@ -65,3 +65,130 @@ gcloud iam service-accounts keys create [FILE_NAME].json \
 ```
 
 將 `[FILE_NAME]` 替換為您想要建立的金鑰檔案名稱，將 `[SERVICE_ACCOUNT_EMAIL]` 替換為剛剛建立的 service account 的電子郵件地址。請將此金鑰檔案妥善保存，因為您稍後將需要使用它。
+
+## 建立 Terraform 設定檔
+
+請參考 [Terraform 官方文件](https://learn.hashicorp.com/tutorials/terraform/gcp-build?in=terraform/gcp-get-started) 建立 Terraform 設定檔。您可以使用以下指令初始化 Terraform：
+
+```bash
+terraform init
+```
+
+接下來，請將 `main.tf` 檔案內的 `project`、`credentials`、`region`、`zone` 設定為您的 GCP 專案資訊：
+
+```bash
+terraform {
+  required_providers {
+    google = {
+      source  = "hashicorp/google"
+      version = "4.66.0"
+    }
+  }
+
+  required_version = ">= 0.14"
+}
+
+provider "google" {
+  project     = "your-project-id"
+  credentials = file("your-service-account-key.json")
+  region      = "asia-east1"
+  zone        = "asia-east1-a"
+}
+```
+
+其中 credentials 參數為您剛剛建立的 service account 金鑰檔案。這邊可以用 `terraform.tfvars` 來設定：
+
+```bash
+project     = "your-project-id"
+credentials = "your-service-account-key.json"
+region      = "asia-east1"
+zone        = "asia-east1-a"
+```
+
+除了設定 `credentials` 之外，您也可以使用 `GOOGLE_APPLICATION_CREDENTIALS` 環境變數來設定 service account 金鑰檔案的路徑：
+
+```bash
+export GOOGLE_APPLICATION_CREDENTIALS="your-service-account-key.json"
+```
+
+## 建立 GCP 資源
+
+建立 main.tf 檔案
+
+```hcl
+terraform {
+  required_providers {
+    google = {
+      source  = "hashicorp/google"
+      version = "4.66.0"
+    }
+  }
+
+  required_version = ">= 0.14"
+}
+
+variable "project_id" {
+  description = "project id"
+}
+
+variable "region" {
+  description = "region"
+}
+
+variable "zone" {
+  description = "zone"
+}
+
+provider "google" {
+  project = var.project_id
+  region  = var.region
+  zone    = var.zone
+}
+```
+
+建立 VPC 資源
+
+```hcl
+# VPC
+resource "google_compute_network" "tf-vpc" {
+  name                    = "${var.project_id}-tf-vpc"
+  auto_create_subnetworks = "false"
+}
+```
+
+完成以上步驟後，您可以使用以下指令來預覽 Terraform 將要建立的資源：
+
+```bash
+terraform plan
+```
+
+如果預覽結果沒有問題，您可以使用以下指令來建立資源：
+
+```bash
+terraform apply
+```
+
+## 儲存 Terraform 狀態到 GCS
+
+執行完上述步驟後，您可以發現在目錄底下多了一個 `terraform.tfstate` 檔案，這個檔案是用來記錄 Terraform 管理的資源狀態，以及資源間的關聯性。如果您想要將這個檔案儲存到 GCS，可以用 Terraform 建立 GCS 相關資源
+
+```hcl
+# GCS
+resource "google_storage_bucket" "tf-state-bucket" {
+  name     = "${var.project_id}-tf-state-bucket"
+  force_destroy = false
+  location      = "US"
+  storage_class = "STANDARD"
+  versioning {
+    enabled = true
+  }
+}
+
+
+## 刪除 GCP 資源
+
+如果您想要刪除剛剛建立的資源，可以使用以下指令：
+
+```bash
+terraform destroy
+```
