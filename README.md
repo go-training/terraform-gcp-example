@@ -1,6 +1,14 @@
 # terraform-gcp-example
 
-This is a simple example of how to use Terraform to create a GCP project.
+## 前置作業
+
+### 安裝 Terraform
+
+請參考 [Terraform 官方文件](https://learn.hashicorp.com/tutorials/terraform/install-cli) 安裝 Terraform。
+
+### 安裝 Google Cloud SDK
+
+請參考 [Google Cloud SDK 官方文件](https://cloud.google.com/sdk/docs/install) 安裝 Google Cloud SDK。
 
 ## 在 GCP 上面建立 Service Account
 
