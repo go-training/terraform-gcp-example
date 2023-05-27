@@ -76,7 +76,7 @@ terraform init
 
 接下來，請將 `main.tf` 檔案內的 `project`、`credentials`、`region`、`zone` 設定為您的 GCP 專案資訊：
 
-```bash
+```hcl
 terraform {
   required_providers {
     google = {
@@ -98,7 +98,7 @@ provider "google" {
 
 其中 credentials 參數為您剛剛建立的 service account 金鑰檔案。這邊可以用 `terraform.tfvars` 來設定：
 
-```bash
+```hcl
 project     = "your-project-id"
 credentials = "your-service-account-key.json"
 region      = "asia-east1"
