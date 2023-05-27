@@ -6,6 +6,11 @@ terraform {
     }
   }
 
+  backend "gcs" {
+    bucket = "tf-state-bucket-demo-5704c463dc9b78df"
+    prefix = "terraform/state"
+  }
+
   required_version = ">= 0.14"
 }
 

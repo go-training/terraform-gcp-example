@@ -174,8 +174,12 @@ terraform apply
 
 ```hcl
 # GCS
-resource "google_storage_bucket" "tf-state-bucket" {
-  name     = "${var.project_id}-tf-state-bucket"
+resource "random_id" "bucket_prefix" {
+  byte_length = 8
+}
+
+resource "google_storage_bucket" "tf-state-bucket-demo" {
+  name     = "tf-state-bucket-demo-${random_id.bucket_prefix.hex}"
   force_destroy = false
   location      = "US"
   storage_class = "STANDARD"
@@ -183,7 +187,70 @@ resource "google_storage_bucket" "tf-state-bucket" {
     enabled = true
   }
 }
+```
 
+輸出 GCS bucket 名稱
+
+```hcl
+output "tf_state_bucket" {
+  value = google_storage_bucket.tf-state-bucket.name
+}
+```
+
+可以看到底下結果
+
+```bash
+Apply complete! Resources: 1 added, 0 changed, 0 destroyed.
+
+Outputs:
+
+tf_state_bucket = tf-state-bucket-demo-5704c463dc9b78df
+```
+
+打開 main.tf 檔案，加入以下設定到 terraform 主設定：
+
+```hcl
+  backend "gcs" {
+    bucket = "tf-state-bucket-demo-5704c463dc9b78df"
+    prefix = "terraform/state"
+  }
+```
+
+再進行一次 `terraform init`，就會看到底下結果
+
+```bash
+Initializing the backend...
+Acquiring state lock. This may take a few moments...
+Do you want to copy existing state to the new backend?
+  Pre-existing state was found while migrating the previous "local" backend to the
+  newly configured "gcs" backend. No existing state was found in the newly
+  configured "gcs" backend. Do you want to copy this state to the new "gcs"
+  backend? Enter "yes" to copy and "no" to start with an empty state.
+
+  Enter a value:
+```
+
+輸入 `yes`，就會看到底下結果
+
+```bash
+Successfully configured the backend "gcs"! Terraform will automatically
+use this backend unless the backend configuration changes.
+
+Initializing provider plugins...
+- Reusing previous version of hashicorp/google from the dependency lock file
+- Reusing previous version of hashicorp/random from the dependency lock file
+- Using previously-installed hashicorp/google v4.66.0
+- Using previously-installed hashicorp/random v3.5.1
+
+Terraform has been successfully initialized!
+```
+
+這樣就可以透過 GCS 進行 Terraform 狀態的儲存及版本控制了。最後可以將底下檔案刪除
+
+```bash
+rm terraform.tfstate
+rm terraform.tfstate.backup
+```
 
 ## 刪除 GCP 資源
 
