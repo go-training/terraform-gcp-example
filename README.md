@@ -259,3 +259,11 @@ rm terraform.tfstate.backup
 ```bash
 terraform destroy
 ```
+
+## 參考資料
+
+* [Terraform GCP Provider](https://registry.terraform.io/providers/hashicorp/google/latest/docs)
+* [Terraform GCP Backend](https://www.terraform.io/docs/language/settings/backends/gcs.html)
+* [Terraform GCP Storage Bucket](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/storage_bucket)
+* [Store Terraform state in a Cloud Storage bucket](https://cloud.google.com/docs/terraform/resource-management/store-state)
+* [Provision a GKE Cluster (Google Cloud)](https://developer.hashicorp.com/terraform/tutorials/kubernetes/gke)
